@@ -2,7 +2,7 @@
 
 A GenAI web application that analyzes PDF documents using **multiple AI agents** to generate a summary and extract action items.
 
-🌐 Live App: *(add your Streamlit link here after deployment)*
+🌐 Live App: https://ai-document-summarizer-gk8yyg3wqvjywehulvydmw.streamlit.app/
 
 ---
 
@@ -86,3 +86,4 @@ GitHub: [https://github.com/Prachi57](https://github.com/Prachi57)
 ---
 
 ⭐ If you find this useful, give the repo a star!
+
