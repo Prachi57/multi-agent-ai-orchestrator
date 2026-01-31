@@ -1,38 +1,32 @@
-import os
-from dotenv import load_dotenv
-from transformers import pipeline
+def summarize(self, text):
+    self._load_model()
 
-load_dotenv()
+    if not text or len(text.strip()) < 50:
+        return "Document is too short to summarize."
 
-class SummarizerAgent:
-    def __init__(self):
-        self.token = os.getenv("HUGGINGFACE_API_TOKEN")
-        self.summarizer = None  # lazy init
+    chunks = self.chunk_text(text)
+    summaries = []
 
-    def _load_model(self):
-        if self.summarizer is None:
-            self.summarizer = pipeline(
-                task="summarization",
-                model="sshleifer/distilbart-cnn-12-6",  # IMPORTANT (lighter)
-                use_auth_token=self.token
-            )
+    for chunk in chunks[:2]:
+        chunk = chunk.strip()
+        if len(chunk) < 50:
+            continue
 
-    def chunk_text(self, text, chunk_size=800):
-        return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+        input_len = len(chunk.split())
 
-    def summarize(self, text):
-        self._load_model()  # load only when needed
+        max_len = min(120, max(30, input_len // 2))
+        min_len = min(40, max(10, input_len // 4))
 
-        chunks = self.chunk_text(text)
-        summaries = []
+        result = self.summarizer(
+            chunk,
+            max_length=max_len,
+            min_length=min_len,
+            do_sample=False
+        )
 
-        for chunk in chunks[:2]:  # keep small for cloud
-            result = self.summarizer(
-                chunk,
-                max_length=120,
-                min_length=40,
-                do_sample=False
-            )
-            summaries.append(result[0]["summary_text"])
+        summaries.append(result[0]["summary_text"])
 
-        return " ".join(summaries)
+    if not summaries:
+        return "No meaningful content found to summarize."
+
+    return " ".join(summaries)
