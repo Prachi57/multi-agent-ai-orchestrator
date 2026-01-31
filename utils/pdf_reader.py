@@ -2,6 +2,7 @@ from pypdf import PdfReader
 import re
 
 def clean_text(text: str) -> str:
+    # Fix spaced characters like D a t a -> Data
     text = re.sub(
         r'(?:(?<=\b)[A-Za-z]\s)+(?:[A-Za-z])',
         lambda m: m.group(0).replace(" ", ""),

@@ -2,7 +2,6 @@ from agents.summarizer import SummarizerAgent
 from agents.action_extractor import ActionExtractorAgent
 from agents.planner import PlannerAgent
 
-
 class Orchestrator:
     def __init__(self):
         self.planner = PlannerAgent()
