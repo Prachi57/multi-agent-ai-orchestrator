@@ -1,7 +1,6 @@
-langchain
-langchain-community
-transformers
-torch
-python-dotenv
-pypdf
 streamlit
+transformers==4.41.2
+torch==2.2.2
+sentencepiece
+pypdf
+python-dotenv
