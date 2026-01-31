@@ -7,10 +7,11 @@ load_dotenv()
 class SummarizerAgent:
     def __init__(self):
         self.token = os.getenv("HUGGINGFACE_API_TOKEN")
+
         self.summarizer = pipeline(
-            "summarization",
+            task="summarization",
             model="facebook/bart-large-cnn",
-            token=self.token
+            use_auth_token=self.token
         )
 
     def chunk_text(self, text, chunk_size=800):
@@ -26,7 +27,12 @@ class SummarizerAgent:
         summaries = []
 
         for chunk in chunks[:3]:
-            result = self.summarizer(chunk, max_length=130, min_length=50, do_sample=False)
+            result = self.summarizer(
+                chunk,
+                max_length=130,
+                min_length=50,
+                do_sample=False
+            )
             summaries.append(result[0]["summary_text"])
 
         return " ".join(summaries)
