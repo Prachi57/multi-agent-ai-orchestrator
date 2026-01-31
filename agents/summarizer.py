@@ -7,30 +7,30 @@ load_dotenv()
 class SummarizerAgent:
     def __init__(self):
         self.token = os.getenv("HUGGINGFACE_API_TOKEN")
+        self.summarizer = None  # lazy init
 
-        self.summarizer = pipeline(
-            task="summarization",
-            model="facebook/bart-large-cnn",
-            use_auth_token=self.token
-        )
+    def _load_model(self):
+        if self.summarizer is None:
+            self.summarizer = pipeline(
+                task="summarization",
+                model="sshleifer/distilbart-cnn-12-6",  # IMPORTANT (lighter)
+                use_auth_token=self.token
+            )
 
     def chunk_text(self, text, chunk_size=800):
-        chunks = []
-        start = 0
-        while start < len(text):
-            chunks.append(text[start:start + chunk_size])
-            start += chunk_size
-        return chunks
+        return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
 
     def summarize(self, text):
+        self._load_model()  # load only when needed
+
         chunks = self.chunk_text(text)
         summaries = []
 
-        for chunk in chunks[:3]:
+        for chunk in chunks[:2]:  # keep small for cloud
             result = self.summarizer(
                 chunk,
-                max_length=130,
-                min_length=50,
+                max_length=120,
+                min_length=40,
                 do_sample=False
             )
             summaries.append(result[0]["summary_text"])
